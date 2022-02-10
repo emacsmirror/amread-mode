@@ -6,7 +6,7 @@
 ;; Package-Requires: ((emacs "24.3") (cl-lib "0.6.1"))
 ;; Package-Version: 0.1
 ;; Keywords: wp
-;; homepage: https://github.com/stardiviner/amread-mode
+;; homepage: https://repo.or.cz/amread-mode.git
 
 ;; amread-mode is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by
