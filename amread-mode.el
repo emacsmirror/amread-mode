@@ -100,9 +100,12 @@
 
 (defun amread--update ()
   "Update and scroll forward under Emacs timer."
-  (if (eq amread-scroll-style 'word)
-      (amread--word-update)
-    (amread--line-update)))
+  (cl-case amread-scroll-style
+    ('word
+     (amread--word-update))
+    ('line
+     (amread--line-update))
+    (t (user-error "Seems amread-mode is not normally started or not running."))))
 
 (defun amread--scroll-style-ask ()
   "Ask which scroll style to use."
