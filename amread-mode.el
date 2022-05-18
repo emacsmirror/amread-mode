@@ -33,8 +33,14 @@
 (require 'cl-lib)
 
 
-(defcustom amread-speed 3.0
+(defcustom amread-word-speed 3.0
   "Read words per second."
+  :type 'float
+  :safe #'floatp
+  :group 'amread-mode)
+
+(defcustom amread-line-speed 4.0
+  "Read one line using N seconds in average."
   :type 'float
   :safe #'floatp
   :group 'amread-mode)
@@ -135,15 +141,15 @@
      (when amread--current-position
        (goto-char amread--current-position))
      (setq amread--timer
-           (run-with-timer 0 (/ 1.0 amread-speed) #'amread--update)))
+           (run-with-timer 0 (/ 1.0 amread-word-speed) #'amread--update)))
     (line
      (when amread--current-position
        (goto-char (point-min))
        (forward-line amread--current-position))
      (let* ((next-line-words (amread--get-next-line-words)) ; for English
-            (amread--stick-secs (/ next-line-words amread-speed)))
+            (amread--stick-secs (/ next-line-words amread-word-speed)))
        (setq amread--timer
-             (run-with-timer amread--stick-secs nil #'amread--update)))))
+             (run-with-timer amread--stick-secs amread-line-speed #'amread--update)))))
   (message "The amread-mode start reading..."))
 
 ;;;###autoload
@@ -174,12 +180,12 @@
 (defun amread-speed-up ()
   "Speed up `amread-mode'."
   (interactive)
-  (setq amread-speed (cl-incf amread-speed 0.2)))
+  (setq amread-word-speed (cl-incf amread-word-speed 0.2)))
 
 (defun amread-speed-down ()
   "Speed down `amread-mode'."
   (interactive)
-  (setq amread-speed (cl-decf amread-speed 0.2)))
+  (setq amread-word-speed (cl-decf amread-word-speed 0.2)))
 
 (defvar amread-mode-map
   (let ((map (make-sparse-keymap)))
