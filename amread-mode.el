@@ -147,9 +147,9 @@
        (goto-char (point-min))
        (forward-line amread--current-position))
      (let* ((next-line-words (amread--get-next-line-words)) ; for English
-            (amread--stick-secs (/ next-line-words amread-word-speed)))
+            (amread--next-line-pause-secs (/ next-line-words amread-word-speed)))
        (setq amread--timer
-             (run-with-timer amread--stick-secs amread-line-speed #'amread--update)))))
+             (run-with-timer amread--next-line-pause-secs amread-line-speed #'amread--update)))))
   (message "The amread-mode start reading..."))
 
 ;;;###autoload
