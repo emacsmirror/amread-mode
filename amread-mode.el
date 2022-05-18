@@ -144,7 +144,7 @@
             (amread--stick-secs (/ next-line-words amread-speed)))
        (setq amread--timer
              (run-with-timer amread--stick-secs nil #'amread--update)))))
-  (message "I start reading..."))
+  (message "The amread-mode start reading..."))
 
 ;;;###autoload
 (defun amread-stop ()
@@ -157,7 +157,7 @@
       (delete-overlay amread--overlay)))
   (setq amread-scroll-style nil)
   (read-only-mode -1)
-  (message "I stopped reading."))
+  (message "The amread-mode stopped reading."))
 
 (defun amread-pause-or-resume ()
   "Pause or resume amread."
