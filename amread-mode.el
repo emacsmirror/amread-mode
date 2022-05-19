@@ -117,7 +117,8 @@
 (defun amread--scroll-style-ask ()
   "Ask which scroll style to use."
   (let ((style (intern (completing-read "amread-mode scroll style: " '("word" "line")))))
-    (setq amread-scroll-style style)))
+    (setq amread-scroll-style style)
+    style))
 
 (defun amread--get-line-words (&optional pos)
   "Get the line words of position."
@@ -144,21 +145,25 @@
   "Start / resume amread."
   (interactive)
   (read-only-mode 1)
+  ;; if quit `amread--scroll-style-ask', then don't enable `amread-mode'.
   (or amread-scroll-style (amread--scroll-style-ask))
-  ;; resume from paused position
-  (cl-case amread-scroll-style
-    (word
-     (when amread--current-position
-       (goto-char amread--current-position))
-     (setq amread--timer
-           (run-with-timer 0 (/ 1.0 amread-word-speed) #'amread--update)))
-    (line
-     (when amread--current-position
-       (goto-char (point-min))
-       (forward-line amread--current-position))
-     (setq amread--timer
-           (run-with-timer 1 amread-line-speed #'amread--update))))
-  (message "The amread-mode start reading..."))
+  (if (null amread-scroll-style)
+      (user-error "User quited entering amread-mode.")
+    ;; resume from paused position
+    (cl-case amread-scroll-style
+      (word
+       (when amread--current-position
+         (goto-char amread--current-position))
+       (setq amread--timer
+             (run-with-timer 0 (/ 1.0 amread-word-speed) #'amread--update)))
+      (line
+       (when amread--current-position
+         (goto-char (point-min))
+         (forward-line amread--current-position))
+       (setq amread--timer
+             (run-with-timer 1 amread-line-speed #'amread--update)))
+      (t (user-error "Seems amread-mode is not normally started because of not selecting scroll style OR just not running.")))
+    (message "The amread-mode start reading...")))
 
 ;;;###autoload
 (defun amread-stop ()
