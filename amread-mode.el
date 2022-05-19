@@ -124,6 +124,7 @@
   "Get the line words of position."
   (save-excursion
     (and pos (goto-char pos))
+    (beginning-of-line)
     (count-words (line-end-position) (line-beginning-position))))
 
 (defun amread--get-next-line-words ()
