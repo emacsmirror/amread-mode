@@ -104,7 +104,14 @@
     ('word
      (amread--word-update))
     ('line
-     (amread--line-update))
+     (amread--line-update)
+     ;; Auto modify the running timer REPEAT seconds based on next line words length.
+     (let* ((next-line-words (amread--get-next-line-words)) ; for English
+            ;; TODO: Add Chinese text logic.
+            ;; (next-line-length (amread--get-next-line-length)) ; for Chinese
+            (amread--next-line-pause-secs (truncate (/ next-line-words amread-word-speed))))
+       (when (> amread--next-line-pause-secs 0)
+         (setf (timer--repeat-delay amread--timer) amread--next-line-pause-secs))))
     (t (user-error "Seems amread-mode is not normally started or not running."))))
 
 (defun amread--scroll-style-ask ()
@@ -149,10 +156,8 @@
      (when amread--current-position
        (goto-char (point-min))
        (forward-line amread--current-position))
-     (let* ((next-line-words (amread--get-next-line-words)) ; for English
-            (amread--next-line-pause-secs (/ next-line-words amread-word-speed)))
-       (setq amread--timer
-             (run-with-timer amread--next-line-pause-secs amread-line-speed #'amread--update)))))
+     (setq amread--timer
+           (run-with-timer 1 amread-line-speed #'amread--update))))
   (message "The amread-mode start reading..."))
 
 ;;;###autoload
