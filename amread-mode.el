@@ -335,8 +335,10 @@ It has three status values:
 ;;;###autoload
 (defun amread-voice-reader-switch-language-voice (&optional language)
   "Switch voice reader LANGUAGE or voice."
-  (interactive)
+  (interactive "P")
   (let ((language (or language
+                      (when (called-interactively-p 'interactive)
+                        (intern (completing-read "[amread] Select language: " '("chinese" "english"))))
                       amread-voice-reader-language
                       (amread--voice-reader-detect-language))))
     (pcase amread-voice-reader-command
