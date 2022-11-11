@@ -298,11 +298,12 @@ It has three status values:
 (defun amread--voice-reader-detect-language (&optional string)
   "Detect text language."
   ;; Return t if STRING is a Chinese string.
-  (let ((string (or string (word-at-point))))
-    (cond
-     ((string-match (format "\\cC\\{%s\\}" (length string)) string)
-      'chinese)
-     (t 'english))))
+  (if-let ((string (or string (word-at-point))))
+      (cond
+       ((string-match (format "\\cC\\{%s\\}" (length string)) string)
+        'chinese)
+       (t 'english))
+    'chinese))
 
 ;; (amread--voice-reader-detect-language "测试")
 ;; (amread--voice-reader-detect-language "测试test")
