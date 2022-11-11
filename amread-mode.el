@@ -287,6 +287,16 @@ It has three status values:
     (setq amread-voice-reader-enabled t)))
 
 ;;;###autoload
+(defun amread-voice-reader-switch-language-voice ()
+  "Switch voice reader language or voice."
+  (interactive)
+  (pcase amread-voice-reader-command
+    ("say"
+     (setq amread-voice-reader-command-options
+           (format "--voice=%s"
+                   (completing-read "[amread] Select language/voice: " '("Ting-Ting" "Ava")))))))
+
+;;;###autoload
 (defun amread-voice-reader-read-buffer ()
   "Read current buffer text without timer highlight updating."
   (interactive)
@@ -312,6 +322,7 @@ It has three status values:
     (define-key map (kbd "+") #'amread-speed-up)
     (define-key map (kbd "-") #'amread-speed-down)
     (define-key map (kbd "v") #'amread-voice-reader-toggle)
+    (define-key map (kbd "L") #'amread-voice-reader-switch-language-voice)
     map)
   "Keymap for `amread-mode' buffers.")
 
