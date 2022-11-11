@@ -240,6 +240,11 @@ It has three status values:
   ;; if quit `amread--scroll-style-ask', then don't enable `amread-mode'.
   (or amread-scroll-style (amread--scroll-style-ask))
   (setq amread--voice-reader-proc-finished 'not-started)
+  ;; select language
+  (setq amread-voice-reader-language
+        (intern
+         (completing-read "[amread] Select language: " '("chinese" "english"))))
+  ;; select scroll style
   (if (null amread-scroll-style)
       (user-error "User quited entering amread-mode.")
     ;; resume from paused position
@@ -332,10 +337,8 @@ It has three status values:
   "Switch voice reader LANGUAGE or voice."
   (interactive)
   (let ((language (or language
-                      (amread--voice-reader-detect-language)
-                      (if (null amread-voice-reader-language)
-                          (intern (completing-read "[amread] Select language: " '("chinese" "english")))
-                        amread-voice-reader-language))))
+                      amread-voice-reader-language
+                      (amread--voice-reader-detect-language))))
     (pcase amread-voice-reader-command
       ("say"
        (cl-case language
