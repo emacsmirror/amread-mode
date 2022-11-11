@@ -83,7 +83,7 @@
 (defvar amread--current-position nil)
 (defvar amread--overlay nil)
 
-(defvar amread--voice-read-text-finished nil
+(defvar amread--voice-reader-proc-finished nil
   "A process status variable indicate whether voice reader finished reading.
 It has three status values:
 - 'not-started :: process not started
@@ -93,7 +93,7 @@ It has three status values:
 (defun amread--voice-read-text (text)
   "Read TEXT with voice command-line tool."
   (when (and amread-voice-reader-enabled (not (string-empty-p text)))
-    (setq amread--voice-read-text-finished 'running)
+    (setq amread--voice-reader-proc-finished 'running)
     
     ;; Synchronous Processes
     ;; (call-process-shell-command
@@ -108,7 +108,7 @@ It has three status values:
      :command (list amread-voice-reader-command amread-voice-reader-command-options text)
      :sentinel (lambda (proc event)
                  (if (string= event "finished\n")
-                     (setq amread--voice-read-text-finished 'finished)))
+                     (setq amread--voice-reader-proc-finished 'finished)))
      :buffer " *amread-voice-reader*"
      :stderr " *amread-voice-reader*")))
 
@@ -160,19 +160,19 @@ It has three status values:
   (cl-case amread-scroll-style
     (word
      (if amread-voice-reader-enabled ; wait for process finished, then jump to next word.
-         (cl-case amread--voice-read-text-finished
+         (cl-case amread--voice-reader-proc-finished
            (not-started (amread--word-update))
            (running (ignore))
            (finished (amread--word-update))
-           (t (setq amread--voice-read-text-finished 'not-started)))
+           (t (setq amread--voice-reader-proc-finished 'not-started)))
        (amread--word-update)))
     (line
      (if amread-voice-reader-enabled ; wait for process finished, then jump to next line.
-         (cl-case amread--voice-read-text-finished
+         (cl-case amread--voice-reader-proc-finished
            (not-started (amread--line-update))
            (running (ignore))
            (finished (amread--line-update))
-           (t (setq amread--voice-read-text-finished 'not-started)))
+           (t (setq amread--voice-reader-proc-finished 'not-started)))
        (amread--line-update))
      ;; Auto modify the running timer REPEAT seconds based on next line words length.
      (let* ((next-line-words (amread--get-next-line-words)) ; for English
