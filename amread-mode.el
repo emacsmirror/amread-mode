@@ -261,6 +261,8 @@ It has three status values:
        (setq amread--timer
              (run-with-timer 1 amread-line-speed #'amread--update)))
       (t (user-error "Seems amread-mode is not normally started because of not selecting scroll style OR just not running.")))
+    ;; enable hydra
+    (hydra-amread/body)
     (message "[amread] start reading...")))
 
 ;;;###autoload
@@ -274,6 +276,7 @@ It has three status values:
       (delete-overlay amread--overlay)))
   (setq amread-scroll-style nil)
   (read-only-mode -1)
+  (hydra-keyboard-quit)
   (message "[amread] stopped."))
 
 ;;;###autoload
@@ -288,7 +291,8 @@ It has three status values:
 (defun amread-mode-quit ()
   "Disable `amread-mode'."
   (interactive)
-  (amread-mode -1))
+  (amread-mode -1)
+  (hydra-keyboard-quit))
 
 ;;;###autoload
 (defun amread-speed-up ()
@@ -382,8 +386,25 @@ It has three status values:
     (define-key map (kbd "-") #'amread-speed-down)
     (define-key map (kbd "v") #'amread-voice-reader-toggle)
     (define-key map (kbd "L") #'amread-voice-reader-switch-language-voice)
+    (define-key map (kbd ".") #'hydra-amread/body)
     map)
   "Keymap for `amread-mode' buffers.")
+
+(defhydra hydra-amread (:color green :hint nil :exit nil)
+  "
+^Control^                ^Adjust When Reading^
+^------------------^     ^-------------------------^
+_SPC_: pause/resume      _+_: speed up
+_q_: quit                _-_: speed down
+^ ^                      _v_: toggle voice reader
+^ ^                      _L_: switch language/voice
+"
+  ("SPC" amread-pause-or-resume :color blue)
+  ("q" amread-mode-quit :color red)
+  ("+" amread-speed-up :color blue)
+  ("-" amread-speed-down :color blue)
+  ("v" amread-voice-reader-toggle :color pink)
+  ("L" amread-voice-reader-switch-language-voice :color pink))
 
 ;;;###autoload
 (define-minor-mode amread-mode
