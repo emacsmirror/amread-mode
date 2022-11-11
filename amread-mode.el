@@ -90,9 +90,25 @@ It has three status values:
 - 'running     :: process still running
 - 'finished    :: process finished")
 
+(defmacro amread--voice-reader-status-wrapper (body)
+  "A wrapper macro for detecting voice reader process status and execute BODY."
+  `(if amread-voice-reader-enabled
+       ;; wait for process finished, then jump to next word.
+       (cl-case amread--voice-reader-proc-finished
+         (not-started ,body)
+         (running (ignore))
+         (finished ,body)
+         (t (setq amread--voice-reader-proc-finished 'not-started)))
+     ,body))
+
+;; (macroexpand-1
+;;  '(amread--voice-reader-status-wrapper (amread--word-update)))
+
 (defun amread--voice-read-text (text)
   "Read TEXT with voice command-line tool."
-  (when (and amread-voice-reader-enabled (not (string-empty-p text)))
+  (when (and amread-voice-reader-enabled
+             (not (null text))
+             (not (string-empty-p text)))
     (setq amread--voice-reader-proc-finished 'running)
     
     ;; Synchronous Processes
@@ -159,21 +175,9 @@ It has three status values:
   "Update and scroll forward under Emacs timer."
   (cl-case amread-scroll-style
     (word
-     (if amread-voice-reader-enabled ; wait for process finished, then jump to next word.
-         (cl-case amread--voice-reader-proc-finished
-           (not-started (amread--word-update))
-           (running (ignore))
-           (finished (amread--word-update))
-           (t (setq amread--voice-reader-proc-finished 'not-started)))
-       (amread--word-update)))
+     (amread--voice-reader-status-wrapper (amread--word-update)))
     (line
-     (if amread-voice-reader-enabled ; wait for process finished, then jump to next line.
-         (cl-case amread--voice-reader-proc-finished
-           (not-started (amread--line-update))
-           (running (ignore))
-           (finished (amread--line-update))
-           (t (setq amread--voice-reader-proc-finished 'not-started)))
-       (amread--line-update))
+     (amread--voice-reader-status-wrapper (amread--line-update))
      ;; Auto modify the running timer REPEAT seconds based on next line words length.
      (let* ((next-line-words (amread--get-next-line-words)) ; for English
             ;; TODO: Add Chinese text logic.
