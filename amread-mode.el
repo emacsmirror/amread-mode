@@ -279,7 +279,7 @@ It has three status values:
   (setq amread-word-speed (cl-decf amread-word-speed 0.2)))
 
 ;;;###autoload
-(defun amread-toggle-voice-reading ()
+(defun amread-voice-reader-toggle ()
   "Toggle text voice reading."
   (interactive)
   (if amread-voice-reader-enabled
@@ -311,7 +311,7 @@ It has three status values:
     (define-key map [remap keyboard-quit] #'amread-mode-quit)
     (define-key map (kbd "+") #'amread-speed-up)
     (define-key map (kbd "-") #'amread-speed-down)
-    (define-key map (kbd "v") #'amread-toggle-voice-reading)
+    (define-key map (kbd "v") #'amread-voice-reader-toggle)
     map)
   "Keymap for `amread-mode' buffers.")
 
