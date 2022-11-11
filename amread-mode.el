@@ -248,6 +248,7 @@ It has three status values:
   (read-only-mode -1)
   (message "The amread-mode stopped reading."))
 
+;;;###autoload
 (defun amread-pause-or-resume ()
   "Pause or resume amread."
   (interactive)
@@ -255,21 +256,25 @@ It has three status values:
       (amread-stop)
     (amread-start)))
 
+;;;###autoload
 (defun amread-mode-quit ()
   "Disable `amread-mode'."
   (interactive)
   (amread-mode -1))
 
+;;;###autoload
 (defun amread-speed-up ()
   "Speed up `amread-mode'."
   (interactive)
   (setq amread-word-speed (cl-incf amread-word-speed 0.2)))
 
+;;;###autoload
 (defun amread-speed-down ()
   "Speed down `amread-mode'."
   (interactive)
   (setq amread-word-speed (cl-decf amread-word-speed 0.2)))
 
+;;;###autoload
 (defun amread-toggle-voice-reading ()
   "Toggle text voice reading."
   (interactive)
