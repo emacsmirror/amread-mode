@@ -286,6 +286,24 @@ It has three status values:
       (setq amread-voice-reader-enabled nil)
     (setq amread-voice-reader-enabled t)))
 
+;;;###autoload
+(defun amread-voice-reader-read-buffer ()
+  "Read current buffer text without timer highlight updating."
+  (interactive)
+  ;; loop over all lines of buffer.
+  (save-excursion
+    (save-restriction
+      (widen)
+      (goto-char (point-min))
+      (while (not (eobp))               ; <- main code
+        (let* ((line-begin (line-beginning-position))
+               (line-end (line-end-position))
+               (line-text (buffer-substring-no-properties line-begin line-end)))
+          ;; line processiqng
+          (let ((amread-voice-reader-enabled t))
+            (amread--voice-reader-status-wrapper (amread--voice-read-text line-text)))
+          (forward-line 1))))))
+
 (defvar amread-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "q") #'amread-mode-quit)
