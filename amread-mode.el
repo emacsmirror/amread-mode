@@ -75,6 +75,12 @@
   :safe #'stringp
   :group 'amread-mode)
 
+(defcustom amread-voice-reader-language 'chinese
+  "Specifiy default language for voice reader."
+  :type 'symbol
+  :safe #'symbolp
+  :group 'amread-mode)
+
 (defface amread-highlight-face
   '((t :foreground "black" :background "ForestGreen"))
   "Face for amread-mode highlight."
@@ -315,7 +321,8 @@ It has three status values:
        ((pyim-probe-dynamic-english)
         'english)
        ((string-match (format "\\cC\\{%s\\}" (length string)) string)
-        'chinese))))
+        'chinese))
+    nil))
 
 ;; (amread--voice-reader-detect-language "测试")
 ;; (amread--voice-reader-detect-language "测试test")
@@ -324,7 +331,11 @@ It has three status values:
 (defun amread-voice-reader-switch-language-voice (&optional language)
   "Switch voice reader LANGUAGE or voice."
   (interactive)
-  (let ((language (or language (amread--voice-reader-detect-language))))
+  (let ((language (or language
+                      (amread--voice-reader-detect-language)
+                      (if (null amread-voice-reader-language)
+                          (intern (completing-read "[amread] Select language: " '("chinese" "english")))
+                        amread-voice-reader-language))))
     (pcase amread-voice-reader-command
       ("say"
        (cl-case language
