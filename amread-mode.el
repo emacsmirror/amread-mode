@@ -110,6 +110,9 @@ It has three status values:
              (not (null text))
              (not (string-empty-p text)))
     (setq amread--voice-reader-proc-finished 'running)
+
+    ;; detect language and switch language/voice.
+    (amread-voice-reader-switch-language-voice)
     
     ;; Synchronous Processes
     ;; (call-process-shell-command
@@ -286,15 +289,33 @@ It has three status values:
       (setq amread-voice-reader-enabled nil)
     (setq amread-voice-reader-enabled t)))
 
+(defun amread--voice-reader-detect-language (&optional string)
+  "Detect text language."
+  ;; Return t if STRING is a Chinese string.
+  (let ((string (or string (word-at-point))))
+    (cond
+     ((string-match (format "\\cC\\{%s\\}" (length string)) string)
+      'chinese)
+     (t 'english))))
+
+;; (amread--voice-reader-detect-language "测试")
+;; (amread--voice-reader-detect-language "测试test")
+
 ;;;###autoload
-(defun amread-voice-reader-switch-language-voice ()
-  "Switch voice reader language or voice."
+(defun amread-voice-reader-switch-language-voice (&optional language)
+  "Switch voice reader LANGUAGE or voice."
   (interactive)
-  (pcase amread-voice-reader-command
-    ("say"
-     (setq amread-voice-reader-command-options
-           (format "--voice=%s"
-                   (completing-read "[amread] Select language/voice: " '("Ting-Ting" "Ava")))))))
+  (let ((language (or language (amread--voice-reader-detect-language))))
+    (pcase amread-voice-reader-command
+      ("say"
+       (cl-case language
+         (chinese
+          (setq amread-voice-reader-command-options "--voice=Ting-Ting"))
+         (english
+          (setq amread-voice-reader-command-options "--voice=Ava"))
+         (t (setq amread-voice-reader-command-options
+                  (format "--voice=%s"
+                          (completing-read "[amread] Select language/voice: " '("Ting-Ting" "Ava"))))))))))
 
 ;;;###autoload
 (defun amread-voice-reader-read-buffer ()
