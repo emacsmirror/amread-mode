@@ -224,6 +224,7 @@ It has three status values:
   (read-only-mode 1)
   ;; if quit `amread--scroll-style-ask', then don't enable `amread-mode'.
   (or amread-scroll-style (amread--scroll-style-ask))
+  (setq amread--voice-reader-proc-finished 'not-started)
   (if (null amread-scroll-style)
       (user-error "User quited entering amread-mode.")
     ;; resume from paused position
