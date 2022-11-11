@@ -3,7 +3,7 @@
 ;;; Time-stamp: <2020-06-23 23:44:49 stardiviner>
 
 ;; Authors: stardiviner <numbchild@gmail.com>
-;; Package-Requires: ((emacs "24.3") (cl-lib "0.6.1"))
+;; Package-Requires: ((emacs "24.3") (cl-lib "0.6.1") (pyim "5.2.8"))
 ;; Package-Version: 0.1
 ;; Keywords: wp
 ;; homepage: https://repo.or.cz/amread-mode.git
@@ -31,6 +31,7 @@
 
 ;;; Code:
 (require 'cl-lib)
+(require 'pyim)
 
 
 (defcustom amread-word-speed 3.0
@@ -308,10 +309,13 @@ It has three status values:
   ;; Return t if STRING is a Chinese string.
   (if-let ((string (or string (word-at-point))))
       (cond
-       ((string-match (format "\\cC\\{%s\\}" (length string)) string)
+       ;; `pyim-probe-auto-english'
+       ((null (pyim-probe-dynamic-english))
         'chinese)
-       (t 'english))
-    'chinese))
+       ((pyim-probe-dynamic-english)
+        'english)
+       ((string-match (format "\\cC\\{%s\\}" (length string)) string)
+        'chinese))))
 
 ;; (amread--voice-reader-detect-language "测试")
 ;; (amread--voice-reader-detect-language "测试test")
