@@ -23,7 +23,7 @@
 ;; along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;; 
+;;;
 ;;; Usage
 ;;;
 ;;; 1. Launch amread-mode with command `amread-mode'.
@@ -120,14 +120,14 @@ It has three status values:
 
     ;; detect language and switch language/voice.
     (amread-voice-reader-switch-language-voice)
-    
+
     ;; Synchronous Processes
     ;; (call-process-shell-command
     ;;  amread-voice-reader-command
     ;;  nil nil nil
     ;;  amread-voice-reader-command-options
     ;;  (shell-quote-argument text))
-    
+
     ;; Async Process
     (make-process
      :name "amread-voice-reader"
