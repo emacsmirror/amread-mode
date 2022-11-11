@@ -241,7 +241,7 @@ It has three status values:
        (setq amread--timer
              (run-with-timer 1 amread-line-speed #'amread--update)))
       (t (user-error "Seems amread-mode is not normally started because of not selecting scroll style OR just not running.")))
-    (message "The amread-mode start reading...")))
+    (message "[amread] start reading...")))
 
 ;;;###autoload
 (defun amread-stop ()
@@ -254,7 +254,7 @@ It has three status values:
       (delete-overlay amread--overlay)))
   (setq amread-scroll-style nil)
   (read-only-mode -1)
-  (message "The amread-mode stopped reading."))
+  (message "[amread] stopped."))
 
 ;;;###autoload
 (defun amread-pause-or-resume ()
@@ -274,21 +274,26 @@ It has three status values:
 (defun amread-speed-up ()
   "Speed up `amread-mode'."
   (interactive)
-  (setq amread-word-speed (cl-incf amread-word-speed 0.2)))
+  (setq amread-word-speed (cl-incf amread-word-speed 0.2))
+  (message "[amread] word speed increased -> %s" amread-word-speed))
 
 ;;;###autoload
 (defun amread-speed-down ()
   "Speed down `amread-mode'."
   (interactive)
-  (setq amread-word-speed (cl-decf amread-word-speed 0.2)))
+  (setq amread-word-speed (cl-decf amread-word-speed 0.2))
+  (message "[amread] word speed decreased -> %s" amread-word-speed))
 
 ;;;###autoload
 (defun amread-voice-reader-toggle ()
   "Toggle text voice reading."
   (interactive)
   (if amread-voice-reader-enabled
-      (setq amread-voice-reader-enabled nil)
-    (setq amread-voice-reader-enabled t)))
+      (progn
+        (setq amread-voice-reader-enabled nil)
+        (message "[amread] voice reader disabled."))
+    (setq amread-voice-reader-enabled t)
+    (message "[amread] voice reader enabled.")))
 
 (defun amread--voice-reader-detect-language (&optional string)
   "Detect text language."
@@ -311,12 +316,15 @@ It has three status values:
       ("say"
        (cl-case language
          (chinese
-          (setq amread-voice-reader-command-options "--voice=Ting-Ting"))
+          (setq amread-voice-reader-command-options "--voice=Ting-Ting")
+          (message "[amread] voice reader switched to Chinese language/voice."))
          (english
-          (setq amread-voice-reader-command-options "--voice=Ava"))
-         (t (setq amread-voice-reader-command-options
-                  (format "--voice=%s"
-                          (completing-read "[amread] Select language/voice: " '("Ting-Ting" "Ava"))))))))))
+          (setq amread-voice-reader-command-options "--voice=Ava")
+          (message "[amread] voice reader switched to English language/voice."))
+         (t
+          (let ((voice (completing-read "[amread] Select language/voice: " '("Ting-Ting" "Ava"))))
+            (setq amread-voice-reader-command-options (format "--voice=%s" voice))
+            (message "[amread] voice reader switched to language/voice <%s>." voice))))))))
 
 ;;;###autoload
 (defun amread-voice-reader-read-buffer ()
