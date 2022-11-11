@@ -75,7 +75,7 @@
   :group 'amread-mode)
 
 (defface amread-highlight-face
-  '((t :foreground "black" :background "orange"))
+  '((t :foreground "black" :background "ForestGreen"))
   "Face for amread-mode highlight."
   :group 'amread-mode)
 
