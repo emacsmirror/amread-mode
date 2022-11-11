@@ -152,7 +152,11 @@ It has three status values:
       (overlay-put amread--overlay 'face 'amread-highlight-face)
       ;; read word text
       (amread--voice-reader-read-text word)
-      (skip-chars-forward "\s\t\n—"))))
+      (skip-chars-forward "\s\t\n—")
+      ;; when in nov.el ebook, auto navigate to next page.
+      (when (and (eobp) (eq major-mode 'nov-mode))
+        (nov-next-document)
+        (message "[amread] nov.el next page.")))))
 
 (defun amread--line-update ()
   "Scroll forward by line as step."
@@ -172,7 +176,11 @@ It has three status values:
       (overlay-put amread--overlay 'face 'amread-highlight-face)
       ;; read line text
       (amread--voice-reader-read-text line-text)
-      (forward-line 1))))
+      (forward-line 1)
+      ;; when in nov.el ebook, auto navigate to next page.
+      (when (and (eobp) (eq major-mode 'nov-mode))
+        (nov-next-document)
+        (message "[amread] nov.el next page.")))))
 
 (defun amread--update ()
   "Update and scroll forward under Emacs timer."
@@ -336,7 +344,7 @@ It has three status values:
     (save-restriction
       (widen)
       (goto-char (point-min))
-      (while (not (eobp))               ; <- main code
+      (while (not (eobp))
         (let* ((line-begin (line-beginning-position))
                (line-end (line-end-position))
                (line-text (buffer-substring-no-properties line-begin line-end)))
