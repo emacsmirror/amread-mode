@@ -22,6 +22,10 @@ The core code is borrowed from "Spray".
     杂了，直接将行长度作为字符串长度考虑来计算停留时间。
 - [X] line style scroll by smart timer speed based on current and next line text length
 - [X] support customize overlay face font and color
+- [X] support reading highlighted text (word,line) with command-line voice tools.
+  + macOS: "=say="
+  + GNU/Linux: "=espeak=", "=festival="
+  + Microsoft Windows:
 
 * Installation
 
@@ -36,6 +40,7 @@ MELPA available soon.
 * Usage
 
 1. start amread-mode with command =[M-x amread]=.
+
 2. amread-mode will ask you use which scroll style? scroll by word or scroll by line.
 
    #+NAME: scroll by word
@@ -44,7 +49,9 @@ MELPA available soon.
    #+NAME: scroll by line
    [[file:scroll-by-line.gif]]
 
-3. stop amread-mode minor mode by pressing =[q]=.
-4. press =[SPACE]= to pause or resume.
-5. press =[+/-]= to change speed.
+3. keybindings in amread reading status:
+   * stop amread-mode minor mode by pressing =[q]=.
+   * press =[SPACE]= to pause or resume.
+   * press =[+/-]= to change speed.
+   * press =[v]= to toggle voice reading.
 
