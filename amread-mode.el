@@ -104,7 +104,7 @@ It has three status values:
 ;; (macroexpand-1
 ;;  '(amread--voice-reader-status-wrapper (amread--word-update)))
 
-(defun amread--voice-read-text (text)
+(defun amread--voice-reader-read-text (text)
   "Read TEXT with voice command-line tool."
   (when (and amread-voice-reader-enabled
              (not (null text))
@@ -151,7 +151,7 @@ It has three status values:
       (setq amread--current-position (point))
       (overlay-put amread--overlay 'face 'amread-highlight-face)
       ;; read word text
-      (amread--voice-read-text word)
+      (amread--voice-reader-read-text word)
       (skip-chars-forward "\s\t\n—"))))
 
 (defun amread--line-update ()
@@ -171,7 +171,7 @@ It has three status values:
         (move-overlay amread--overlay line-begin line-end))
       (overlay-put amread--overlay 'face 'amread-highlight-face)
       ;; read line text
-      (amread--voice-read-text line-text)
+      (amread--voice-reader-read-text line-text)
       (forward-line 1))))
 
 (defun amread--update ()
@@ -333,7 +333,7 @@ It has three status values:
                (line-text (buffer-substring-no-properties line-begin line-end)))
           ;; line processiqng
           (let ((amread-voice-reader-enabled t))
-            (amread--voice-reader-status-wrapper (amread--voice-read-text line-text)))
+            (amread--voice-reader-status-wrapper (amread--voice-reader-read-text line-text)))
           (forward-line 1))))))
 
 (defvar amread-mode-map
