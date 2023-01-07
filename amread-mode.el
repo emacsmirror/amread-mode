@@ -146,14 +146,39 @@ It has three status values:
     (shell-command-to-string
      (format "%s %s" python-interpreter python-code-file))))
 
+(defun amread--voice-reader-run-python-code-in-repl (&rest python-code-lines)
+  "Run PYTHON-CODE-LINES through Python REPL process result to strings list."
+  (let ((python-interpreter (or (executable-find "python3") python-interpreter)))
+    (run-python)
+    ;; `process-send-string' alias `send-string'
+    ;; `python-shell-send-string', `python-shell-internal-send-string', `python-shell-send-string-no-output'
+    (dolist (line python-code-lines
+                  result)
+      ;; assign last eval result to `dolist' binding `result'.
+      (setf result (python-shell-send-string-no-output line)))))
+
+;; (amread--voice-reader-run-python-code-in-repl
+;;  "import sys"
+;;  "print(sys.path)"
+;;  "sys.path")
+
+(defvar amread--voice-reader-engine-initialized nil)
+
 ;; invoke cross-platform TTS Speech API through Python library "pyttsx3".
 (defun amread--voice-reader-read-text-with-tts (text)
   "Read TEXT with cross-platform TTS Speech API through Python library 'pyttsx3'."
-  (amread--voice-reader-run-python-code-to-string
-   "import pyttsx3"
-   "engine = pyttsx3.init()"
+  ;; keep instance of engine to avoid repeat creating performance issue.
+  (unless (eq amread--voice-reader-engine-initialized "True")
+    (setq amread--voice-reader-engine-initialized
+          (amread--voice-reader-run-python-code-in-repl
+           "import pyttsx3"
+           "engine = pyttsx3.init()"
+           "True")))
+  (amread--voice-reader-run-python-code-in-repl
    (format "engine.say(\"%s\")" text)
    "engine.runAndWait()"))
+
+;; (amread--voice-reader-read-text-with-tts "happy")
 
 (defun amread--voice-reader-read-text-with-say (text)
   "Read TEXT with macOS command `say'."
