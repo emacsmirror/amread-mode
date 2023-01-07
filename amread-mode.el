@@ -117,7 +117,43 @@ It has three status values:
              (not (null text))
              (not (string-empty-p text)))
     (setq amread--voice-reader-proc-finished 'running)
-    (amread--voice-reader-read-text-with-say text)))
+    (cl-case system-type
+      (darwin
+       (or (amread--voice-reader-read-text-with-tts text)
+           (amread--voice-reader-read-text-with-say text)))
+      (t (amread--voice-reader-read-text-with-tts text)))))
+
+(defun amread--voice-reader-run-python-code-to-string (&rest python-code-lines)
+  "Run PYTHON-CODE-LINES through Python interpreter result to string."
+  (let ((python-interpreter (or (executable-find "python3") python-interpreter)))
+    (shell-command-to-string
+     (format "%s %s"
+             python-interpreter
+             (concat " -c "
+                     ;; solve double quote character issue.
+                     "\"" (string-replace "\"" "\\\"" (string-join python-code-lines "\n")) "\"")))))
+
+;; (print
+;;  (amread--voice-reader-run-python-code-to-string
+;;   "import numpy as np"
+;;   "print(np.arange(6))"
+;;   "print(\"blah blah\")"
+;;   "print('{}'.format(3))"))
+
+(defun amread--voice-reader-run-python-file-to-string (python-code-file)
+  "Run PYTHON-CODE-FILE through Python interpreter result to string."
+  (let ((python-interpreter (or (executable-find "python3") python-interpreter)))
+    (shell-command-to-string
+     (format "%s %s" python-interpreter python-code-file))))
+
+;; invoke cross-platform TTS Speech API through Python library "pyttsx3".
+(defun amread--voice-reader-read-text-with-tts (text)
+  "Read TEXT with cross-platform TTS Speech API through Python library 'pyttsx3'."
+  (amread--voice-reader-run-python-code-to-string
+   "import pyttsx3"
+   "engine = pyttsx3.init()"
+   (format "engine.say(\"%s\")" text)
+   "engine.runAndWait()"))
 
 (defun amread--voice-reader-read-text-with-say (text)
   "Read TEXT with macOS command `say'."

@@ -22,10 +22,11 @@ The core code is borrowed from "Spray".
     杂了，直接将行长度作为字符串长度考虑来计算停留时间。
 - [X] line style scroll by smart timer speed based on current and next line text length
 - [X] support customize overlay face font and color
-- [X] support reading highlighted text (word,line) with command-line voice tools.
+- [X] support reading highlighted text (word,line) with cross-platform TTS Speech API or command-line voice tools.
+  + cross-platform TTS Speech API
   + macOS: "=say="
   + GNU/Linux: "=espeak=", "=festival="
-  + Microsoft Windows:
+  + Microsoft Windows: TTS
 
 * Installation
 
