@@ -454,6 +454,7 @@ It has three status values:
     map)
   "Keymap for `amread-mode' buffers.")
 
+;;;###autoload
 (defhydra hydra-amread (:color green :hint nil :exit nil)
   "
 ^Control^                ^Adjust When Reading^
