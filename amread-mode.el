@@ -53,7 +53,7 @@
   :safe #'symbolp
   :group 'amread-mode)
 
-(defcustom amread-voice-reader-enabled t
+(defcustom amread-voice-reader-enabled nil
   "The initial state of voice reader."
   :type 'boolean
   :safe #'booleanp
