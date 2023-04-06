@@ -475,7 +475,7 @@ _q_: quit                _-_: speed down
 (define-minor-mode amread-mode
   "I'm reading mode."
   :init nil
-  :lighter " amreading"
+  :lighter " amread"
   :keymap amread-mode-map
   (if amread-mode
       (amread-start)
