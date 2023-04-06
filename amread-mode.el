@@ -443,14 +443,14 @@ It has three status values:
 
 (defvar amread-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "q") #'amread-mode-quit)
-    (define-key map (kbd "SPC") #'amread-pause-or-resume)
+    (define-key map (kbd "q")             #'amread-mode-quit)
+    (define-key map (kbd "SPC")           #'amread-pause-or-resume)
     (define-key map [remap keyboard-quit] #'amread-mode-quit)
-    (define-key map (kbd "+") #'amread-speed-up)
-    (define-key map (kbd "-") #'amread-speed-down)
-    (define-key map (kbd "v") #'amread-voice-reader-toggle)
-    (define-key map (kbd "L") #'amread-voice-reader-switch-language-voice)
-    (define-key map (kbd ".") #'hydra-amread/body)
+    (define-key map (kbd "+")             #'amread-speed-up)
+    (define-key map (kbd "-")             #'amread-speed-down)
+    (define-key map (kbd "v")             #'amread-voice-reader-toggle)
+    (define-key map (kbd "L")             #'amread-voice-reader-switch-language-voice)
+    (define-key map (kbd ".")             #'hydra-amread/body)
     map)
   "Keymap for `amread-mode' buffers.")
 
