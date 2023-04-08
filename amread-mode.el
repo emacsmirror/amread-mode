@@ -337,7 +337,7 @@ It has three status values:
              (run-with-timer 1 amread-line-speed #'amread--update)))
       (t (user-error "Seems amread-mode is not normally started because of not selecting scroll style OR just not running.")))
     ;; enable hydra
-    (hydra-amread/body)
+    (amread-hydra/body)
     (message "[amread] start reading...")))
 
 ;;;###autoload
@@ -450,12 +450,12 @@ It has three status values:
     (define-key map (kbd "-")             #'amread-speed-down)
     (define-key map (kbd "v")             #'amread-voice-reader-toggle)
     (define-key map (kbd "L")             #'amread-voice-reader-switch-language-voice)
-    (define-key map (kbd ".")             #'hydra-amread/body)
+    (define-key map (kbd ".")             #'amread-hydra/body)
     map)
   "Keymap for `amread-mode' buffers.")
 
 ;;;###autoload
-(defhydra hydra-amread (:color green :hint nil :exit nil)
+(defhydra amread-hydra (:color green :hint nil :exit nil)
   "
 ^Control^                ^Adjust When Reading^
 ^------------------^     ^-------------------------^
