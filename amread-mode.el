@@ -3,7 +3,7 @@
 ;;; Time-stamp: <2020-06-23 23:44:49 stardiviner>
 
 ;; Authors: stardiviner <numbchild@gmail.com>
-;; Package-Requires: ((emacs "24.3") (cl-lib "0.6.1") (pyim "5.2.8"))
+;; Package-Requires: ((emacs "24.3") (cl-lib "0.6.1") (pyim "5.2.8") (hydra "0.15.0"))
 ;; Package-Version: 0.1
 ;; Keywords: wp
 ;; homepage: https://repo.or.cz/amread-mode.git
@@ -32,6 +32,7 @@
 ;;; Code:
 (require 'cl-lib)
 (require 'pyim)
+(require 'hydra)
 
 
 (defcustom amread-word-speed 3.0
