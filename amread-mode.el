@@ -70,7 +70,7 @@
   :safe #'stringp
   :group 'amread-mode)
 
-(defcustom amread-voice-reader-command-options '()
+(defcustom amread-voice-reader-command-options '("--rate=200")
   "Specify options for voice reader command."
   :type 'string
   :safe #'stringp
@@ -187,6 +187,9 @@ It has three status values:
 (defvar-local amread--voice-reader-voice nil
   "The buffer local variable of selected voice to be used in macOS.")
 
+;;; set default value of `amread-voice-reader-command-options'
+(setq-default amread-voice-reader-command-options amread-voice-reader-command-options)
+
 (defun amread--voice-reader-read-text-with-say (text &optional language voice)
   "Read TEXT with macOS command `say' in LANGUAGE using VOICE model."
   ;; detect language and switch language/voice.
@@ -209,11 +212,12 @@ It has three status values:
     
     (when voice (setq-local amread--voice-reader-voice voice))
 
-    ;; merge command options
+    ;; buffer-local variable
     (make-variable-buffer-local 'amread-voice-reader-command-options)
-    (setq-local amread-voice-reader-command-options nil) ; reset command options to clear old setting
+    ;; reset command options to original value
+    (setq-local amread-voice-reader-command-options (default-value 'amread-voice-reader-command-options))
+    ;; merge command options
     (add-to-list 'amread-voice-reader-command-options (format "--voice=%s" amread--voice-reader-voice))
-    (add-to-list 'amread-voice-reader-command-options "--rate=180")
 
     ;; Async Process
     (make-process
