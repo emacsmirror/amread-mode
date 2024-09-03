@@ -92,7 +92,7 @@
 (defvar amread--overlay nil)
 
 
-(defun amread--voice-reader-set-lanaguage (language)
+(defun amread--voice-reader-set-language (&optional language)
   "Set LANGUAGE for text voice reader."
   (setq amread-voice-reader-language
         (or language
@@ -358,7 +358,7 @@ It has three status values:
   (or amread-scroll-style (amread--scroll-style-ask))
   (setq amread--voice-reader-proc-finished 'not-started)
   ;; select language
-  (amread--voice-reader-set-lanaguage)
+  (amread--voice-reader-set-language)
   ;; select scroll style
   (if (null amread-scroll-style)
       (user-error "User quited entering amread-mode")
@@ -457,7 +457,7 @@ It has three status values:
   (interactive "P")
   (let ((language (or language
                       (when (called-interactively-p 'interactive)
-                        (amread--voice-reader-set-lanaguage))
+                        (amread--voice-reader-set-language))
                       amread-voice-reader-language
                       (amread--voice-reader-detect-language))))
     language))
