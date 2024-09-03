@@ -3,7 +3,7 @@
 ;;; Time-stamp: <2020-06-23 23:44:49 stardiviner>
 
 ;; Authors: stardiviner <numbchild@gmail.com>
-;; Package-Requires: ((emacs "24.3") (cl-lib "0.6.1") (pyim "5.2.8") (hydra "0.15.0"))
+;; Package-Requires: ((emacs "28.1") (pyim "5.2.8") (hydra "0.15.0"))
 ;; Package-Version: 0.1
 ;; Keywords: wp
 ;; homepage: https://repo.or.cz/amread-mode.git
@@ -84,7 +84,7 @@
 
 (defface amread-highlight-face
   '((t :foreground "black" :background "ForestGreen"))
-  "Face for amread-mode highlight."
+  "Face for `amread-mode' highlight."
   :group 'amread-mode)
 
 (defvar amread--timer nil)
@@ -279,7 +279,7 @@ It has three status values:
             (amread--next-line-pause-secs (truncate (/ next-line-words amread-word-speed))))
        (when (> amread--next-line-pause-secs 0)
          (setf (timer--repeat-delay amread--timer) amread--next-line-pause-secs))))
-    (t (user-error "Seems amread-mode is not normally started or not running."))))
+    (t (user-error "Seems amread-mode is not normally started or not running"))))
 
 (defun amread--scroll-style-ask ()
   "Ask which scroll style to use."
@@ -288,7 +288,7 @@ It has three status values:
     style))
 
 (defun amread--get-line-words (&optional pos)
-  "Get the line words of position."
+  "Get the line words of position POS."
   (save-excursion
     (and pos (goto-char pos))
     (beginning-of-line)
@@ -299,7 +299,7 @@ It has three status values:
   (amread--get-line-words (save-excursion (forward-line) (point))))
 
 (defun amread--get-line-length (&optional pos)
-  "Get the line length of position."
+  "Get the line length of position POS."
   (save-excursion
     (and pos (goto-char pos))
     (- (line-end-position) (line-beginning-position))))
@@ -322,7 +322,7 @@ It has three status values:
          (completing-read "[amread] Select language: " '("chinese" "english"))))
   ;; select scroll style
   (if (null amread-scroll-style)
-      (user-error "User quited entering amread-mode.")
+      (user-error "User quited entering amread-mode")
     ;; resume from paused position
     (cl-case amread-scroll-style
       (word
@@ -336,7 +336,7 @@ It has three status values:
          (forward-line amread--current-position))
        (setq amread--timer
              (run-with-timer 1 amread-line-speed #'amread--update)))
-      (t (user-error "Seems amread-mode is not normally started because of not selecting scroll style OR just not running.")))
+      (t (user-error "Seems amread-mode is not normally started because of not selecting scroll style OR just not running")))
     ;; enable hydra
     (amread-hydra/body)
     (message "[amread] start reading...")))
@@ -396,7 +396,7 @@ It has three status values:
     (message "[amread] voice reader enabled.")))
 
 (defun amread--voice-reader-detect-language (&optional string)
-  "Detect text language."
+  "Detect text language of STRING."
   ;; Return t if STRING is a Chinese string.
   (if-let ((string (or string (word-at-point))))
       (cond
