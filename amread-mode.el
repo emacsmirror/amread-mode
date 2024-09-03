@@ -112,10 +112,10 @@ It has three status values:
              (not (string-empty-p text)))
     (setq amread--voice-reader-proc-finished 'running)
     (cl-case system-type
-      (darwin
-       (or (amread--voice-reader-read-text-with-tts text)
-           (amread--voice-reader-read-text-with-say text)))
+      (darwin (amread--voice-reader-read-text-with-say text))
       (t (amread--voice-reader-read-text-with-tts text)))))
+
+;;; (amread--voice-reader-read-text "testing, 测试")
 
 (defun amread--voice-reader-run-python-code-to-string (&rest python-code-lines)
   "Run PYTHON-CODE-LINES through Python interpreter result to string."
