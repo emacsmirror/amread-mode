@@ -91,6 +91,13 @@
 (defvar amread--current-position nil)
 (defvar amread--overlay nil)
 
+
+(defun amread--voice-reader-set-lanaguage (language)
+  "Set LANGUAGE for text voice reader."
+  (setq amread-voice-reader-language
+        (or language
+            (intern (completing-read "[amread] Select language: " '("chinese" "english"))))))
+
 (defvar amread--voice-reader-proc-finished nil
   "A process status variable indicate whether voice reader finished reading.
 It has three status values:
@@ -170,7 +177,7 @@ It has three status values:
 (defun amread--voice-reader-read-text-with-say (text)
   "Read TEXT with macOS command `say'."
   ;; detect language and switch language/voice.
-  (let ((language (amread-voice-reader-switch-language-voice)))
+  (let ((language amread-voice-reader-language))
     (cl-case language
       (chinese
        (setq amread-voice-reader-command-options "--voice=Ting-Ting")
@@ -317,9 +324,7 @@ It has three status values:
   (or amread-scroll-style (amread--scroll-style-ask))
   (setq amread--voice-reader-proc-finished 'not-started)
   ;; select language
-  (setq amread-voice-reader-language
-        (intern
-         (completing-read "[amread] Select language: " '("chinese" "english"))))
+  (amread--voice-reader-set-lanaguage)
   ;; select scroll style
   (if (null amread-scroll-style)
       (user-error "User quited entering amread-mode")
@@ -418,7 +423,7 @@ It has three status values:
   (interactive "P")
   (let ((language (or language
                       (when (called-interactively-p 'interactive)
-                        (intern (completing-read "[amread] Select language: " '("chinese" "english"))))
+                        (amread--voice-reader-set-lanaguage))
                       amread-voice-reader-language
                       (amread--voice-reader-detect-language))))
     language))
