@@ -215,13 +215,6 @@ It has three status values:
     (add-to-list 'amread-voice-reader-command-options (format "--voice=%s" amread--voice-reader-voice))
     (add-to-list 'amread-voice-reader-command-options "--rate=180")
 
-    ;; Synchronous Processes
-    ;; (call-process-shell-command
-    ;;  amread-voice-reader-command
-    ;;  nil nil nil
-    ;;  amread-voice-reader-command-options
-    ;;  (shell-quote-argument text))
-
     ;; Async Process
     (make-process
      :name "amread-voice-reader"
