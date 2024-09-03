@@ -184,40 +184,35 @@ It has three status values:
     )
   "A list of macOS system available voice models.")
 
+(defvar-local amread--voice-reader-voice nil
+  "The buffer local variable of selected voice to be used in macOS.")
+
 (defun amread--voice-reader-read-text-with-say (text &optional language voice)
   "Read TEXT with macOS command `say' in LANGUAGE using VOICE model."
   ;; detect language and switch language/voice.
-  (let ((language (or language amread-voice-reader-language))
-        (voice-option))
-    (cl-case language
-      (chinese
-       (setq voice (or voice (completing-read "[amread] Select voice: " '("Tingting" "Binbin"))))
-       (setq voice-option (format "--voice=%s" voice))
-       (message "[amread] voice reader switched to language [%s] & voice [%s]" language voice))
-      (chinese-traditional
-       (setq voice (or voice (completing-read "[amread] Select voice: " '("Sinji" "Meijia"))))
-       (setq voice-option (format "--voice=%s" voice))
-       (message "[amread] voice reader switched to language [%s] & voice [%s]" language voice))
-      (english
-       (setq voice (or voice (completing-read "[amread] Select voice: " '("Samantha" "Ava" "Vicki" "Alex"))))
-       (setq voice-option (format "--voice=%s" voice))
-       (message "[amread] voice reader switched to language [%s] & voice [%s]" language voice))
-      (japanese
-       (setq voice (or voice (completing-read "[amread] Select voice: " '("Kyoko" "Otoya"))))
-       (setq voice-option (format "--voice=%s" voice))
-       (message "[amread] voice reader switched to language [%s] & voice [%s]" language voice))
-      (korean
-       (setq voice (or voice (completing-read "[amread] Select voice: " '("Yuna"))))
-       (setq voice-option (format "--voice=%s" voice))
-       (message "[amread] voice reader switched to language [%s] & voice [%s]" language voice))
-      (t
-       (setq voice (or voice (completing-read "[amread] Select voice: " amread--voice-reader-voice-models)))
-       (setq voice-option (format "--voice=%s" voice))
-       (message "[amread] voice reader switched to language [%s] & voice [%s]" language voice)))
+  (let ((language (or language amread-voice-reader-language)))
+    (unless (and (buffer-local-boundp 'amread--voice-reader-voice (current-buffer))
+                 (bound-and-true-p amread--voice-reader-voice))
+      (cl-case language
+        (chinese
+         (setq-local amread--voice-reader-voice (or voice (completing-read "[amread] Select voice: " '("Tingting" "Binbin")))))
+        (chinese-traditional
+         (setq-local amread--voice-reader-voice (or voice (completing-read "[amread] Select voice: " '("Sinji" "Meijia")))))
+        (english
+         (setq-local amread--voice-reader-voice (or voice (completing-read "[amread] Select voice: " '("Samantha" "Ava" "Vicki" "Alex")))))
+        (japanese
+         (setq-local amread--voice-reader-voice (or voice (completing-read "[amread] Select voice: " '("Kyoko" "Otoya")))))
+        (korean
+         (setq-local amread--voice-reader-voice (or voice (completing-read "[amread] Select voice: " '("Yuna")))))
+        (t
+         (setq-local amread--voice-reader-voice (or voice (completing-read "[amread] Select voice: " amread--voice-reader-voice-models))))))
+    
+    (when voice (setq-local amread--voice-reader-voice voice))
 
     ;; merge command options
-    (setq amread-voice-reader-command-options nil) ; reset command options to clear old setting
-    (add-to-list 'amread-voice-reader-command-options voice-option)
+    (make-variable-buffer-local 'amread-voice-reader-command-options)
+    (setq-local amread-voice-reader-command-options nil) ; reset command options to clear old setting
+    (add-to-list 'amread-voice-reader-command-options (format "--voice=%s" amread--voice-reader-voice))
     (add-to-list 'amread-voice-reader-command-options "--rate=180")
 
     ;; Synchronous Processes
