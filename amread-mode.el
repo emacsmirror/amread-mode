@@ -70,7 +70,7 @@
   :safe #'stringp
   :group 'amread-mode)
 
-(defcustom amread-voice-reader-command-options ""
+(defcustom amread-voice-reader-command-options '()
   "Specify options for voice reader command."
   :type 'string
   :safe #'stringp
@@ -175,43 +175,71 @@ It has three status values:
 ;; (amread--voice-reader-read-text-with-tts "happy")
 
 (defconst amread--voice-reader-voice-models
-  '("Ting-Ting" "Ava" "Siri")
+  '("Samantha" "Ava" "Vicki" "Alex" ; en_US
+    "Tingting" "Binbin" ; zh_CN
+    "Sinji" ; zh_HK
+    "Meijia" ; zh_TW
+    "Kyoko" "Otoya" ; ja_JP
+    "Yuna"  ; ko_KR
+    )
   "A list of macOS system available voice models.")
 
-(defun amread--voice-reader-read-text-with-say (text)
-  "Read TEXT with macOS command `say'."
+(defun amread--voice-reader-read-text-with-say (text &optional language voice)
+  "Read TEXT with macOS command `say' in LANGUAGE using VOICE model."
   ;; detect language and switch language/voice.
-  (let ((language amread-voice-reader-language))
+  (let ((language (or language amread-voice-reader-language))
+        (voice-option))
     (cl-case language
       (chinese
-       (setq amread-voice-reader-command-options "--voice=Ting-Ting")
-       (message "[amread] voice reader switched to Chinese language/voice."))
+       (setq voice (or voice (completing-read "[amread] Select voice: " '("Tingting" "Binbin"))))
+       (setq voice-option (format "--voice=%s" voice))
+       (message "[amread] voice reader switched to language [%s] & voice [%s]" language voice))
+      (chinese-traditional
+       (setq voice (or voice (completing-read "[amread] Select voice: " '("Sinji" "Meijia"))))
+       (setq voice-option (format "--voice=%s" voice))
+       (message "[amread] voice reader switched to language [%s] & voice [%s]" language voice))
       (english
-       (setq amread-voice-reader-command-options "--voice=Ava")
-       (message "[amread] voice reader switched to English language/voice."))
+       (setq voice (or voice (completing-read "[amread] Select voice: " '("Samantha" "Ava" "Vicki" "Alex"))))
+       (setq voice-option (format "--voice=%s" voice))
+       (message "[amread] voice reader switched to language [%s] & voice [%s]" language voice))
+      (japanese
+       (setq voice (or voice (completing-read "[amread] Select voice: " '("Kyoko" "Otoya"))))
+       (setq voice-option (format "--voice=%s" voice))
+       (message "[amread] voice reader switched to language [%s] & voice [%s]" language voice))
+      (korean
+       (setq voice (or voice (completing-read "[amread] Select voice: " '("Yuna"))))
+       (setq voice-option (format "--voice=%s" voice))
+       (message "[amread] voice reader switched to language [%s] & voice [%s]" language voice))
       (t
-       (let ((voice (completing-read "[amread] Select language/voice: " amread--voice-reader-voice-models)))
-         (setq amread-voice-reader-command-options (format "--voice=%s" voice))
-         (message "[amread] voice reader switched to language/voice <%s>." voice)))))
+       (setq voice (or voice (completing-read "[amread] Select voice: " amread--voice-reader-voice-models)))
+       (setq voice-option (format "--voice=%s" voice))
+       (message "[amread] voice reader switched to language [%s] & voice [%s]" language voice)))
 
-  ;; Synchronous Processes
-  ;; (call-process-shell-command
-  ;;  amread-voice-reader-command
-  ;;  nil nil nil
-  ;;  amread-voice-reader-command-options
-  ;;  (shell-quote-argument text))
+    ;; merge command options
+    (setq amread-voice-reader-command-options nil) ; reset command options to clear old setting
+    (add-to-list 'amread-voice-reader-command-options voice-option)
+    (add-to-list 'amread-voice-reader-command-options "--rate=180")
 
-  ;; Async Process
-  (make-process
-   :name "amread-voice-reader"
-   :command (list amread-voice-reader-command amread-voice-reader-command-options text)
-   :sentinel (lambda (_proc event)
-               (if (string= event "finished\n")
-                   (setq amread--voice-reader-proc-finished 'finished)))
-   :buffer " *amread-voice-reader*"
-   :stderr " *amread-voice-reader*"))
+    ;; Synchronous Processes
+    ;; (call-process-shell-command
+    ;;  amread-voice-reader-command
+    ;;  nil nil nil
+    ;;  amread-voice-reader-command-options
+    ;;  (shell-quote-argument text))
+
+    ;; Async Process
+    (make-process
+     :name "amread-voice-reader"
+     :command `(,amread-voice-reader-command ,@amread-voice-reader-command-options ,text)
+     :sentinel (lambda (_proc event)
+                 (if (string= event "finished\n")
+                     (setq amread--voice-reader-proc-finished 'finished)))
+     :buffer " *amread-voice-reader*"
+     :stderr " *amread-voice-reader*")))
 
 ;; (amread--voice-reader-read-text-with-say "happy ending")
+;; (amread--voice-reader-read-text-with-say "happy ending" 'english "Samantha")
+;; (amread--voice-reader-read-text-with-say "测试，你说话太多我可不答应。" 'chinese "Tingting")
 
 (defun amread--word-update ()
   "Scroll forward by word as step."
