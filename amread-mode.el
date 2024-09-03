@@ -174,6 +174,10 @@ It has three status values:
 
 ;; (amread--voice-reader-read-text-with-tts "happy")
 
+(defconst amread--voice-reader-voice-models
+  '("Ting-Ting" "Ava" "Siri")
+  "A list of macOS system available voice models.")
+
 (defun amread--voice-reader-read-text-with-say (text)
   "Read TEXT with macOS command `say'."
   ;; detect language and switch language/voice.
@@ -186,7 +190,7 @@ It has three status values:
        (setq amread-voice-reader-command-options "--voice=Ava")
        (message "[amread] voice reader switched to English language/voice."))
       (t
-       (let ((voice (completing-read "[amread] Select language/voice: " '("Ting-Ting" "Ava"))))
+       (let ((voice (completing-read "[amread] Select language/voice: " amread--voice-reader-voice-models)))
          (setq amread-voice-reader-command-options (format "--voice=%s" voice))
          (message "[amread] voice reader switched to language/voice <%s>." voice)))))
 
@@ -206,6 +210,8 @@ It has three status values:
                    (setq amread--voice-reader-proc-finished 'finished)))
    :buffer " *amread-voice-reader*"
    :stderr " *amread-voice-reader*"))
+
+;; (amread--voice-reader-read-text-with-say "happy ending")
 
 (defun amread--word-update ()
   "Scroll forward by word as step."
