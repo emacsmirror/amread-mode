@@ -98,20 +98,6 @@ It has three status values:
 - \='running     :: process still running
 - \='finished    :: process finished")
 
-(defmacro amread--voice-reader-status-wrapper (body)
-  "A wrapper macro for detecting voice reader process status and execute BODY."
-  `(if amread-voice-reader-enabled
-       ;; wait for process finished, then jump to next word.
-       (cl-case amread--voice-reader-proc-finished
-         (not-started ,body)
-         (running (ignore))
-         (finished ,body)
-         (t (setq amread--voice-reader-proc-finished 'not-started)))
-     ,body))
-
-;; (macroexpand-1
-;;  '(amread--voice-reader-status-wrapper (amread--word-update)))
-
 (defun amread--voice-reader-read-text (text)
   "Read TEXT with voice command-line tool."
   (when (and amread-voice-reader-enabled
@@ -269,9 +255,23 @@ It has three status values:
   "Update and scroll forward under Emacs timer."
   (cl-case amread-scroll-style
     (word
-     (amread--voice-reader-status-wrapper (amread--word-update)))
+     (if amread-voice-reader-enabled
+         ;; wait for process finished, then jump to next word.
+         (cl-case amread--voice-reader-proc-finished
+           (not-started (amread--word-update))
+           (running (ignore))
+           (finished (amread--word-update))
+           (t (setq amread--voice-reader-proc-finished 'not-started)))
+       (amread--word-update)))
     (line
-     (amread--voice-reader-status-wrapper (amread--line-update))
+     (if amread-voice-reader-enabled
+         ;; wait for process finished, then jump to next word.
+         (cl-case amread--voice-reader-proc-finished
+           (not-started (amread--line-update))
+           (running (ignore))
+           (finished (amread--line-update))
+           (t (setq amread--voice-reader-proc-finished 'not-started)))
+       (amread--line-update))
      ;; Auto modify the running timer REPEAT seconds based on next line words length.
      (let* ((next-line-words (amread--get-next-line-words)) ; for English
             ;; TODO: Add Chinese text logic.
@@ -438,8 +438,12 @@ It has three status values:
                (line-text (buffer-substring-no-properties line-begin line-end)))
           ;; line processiqng
           (let ((amread-voice-reader-enabled t))
-            (amread--voice-reader-status-wrapper
-             (amread--voice-reader-read-text line-text)))
+            ;; wait for process finished, then jump to next word.
+            (cl-case amread--voice-reader-proc-finished
+              (not-started (amread--voice-reader-read-text line-text))
+              (running (ignore))
+              (finished (amread--voice-reader-read-text line-text))
+              (t (setq amread--voice-reader-proc-finished 'not-started))))
           (forward-line 1))))))
 
 (defvar amread-mode-map
